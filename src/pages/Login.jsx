@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +19,7 @@ export default function Login() {
         setError("");
         setLoading(true);
         try {
-            const res = await axios.post("/api/v1/auth/login", { email, password });
+            const res = await api.post("/api/v1/auth/login", { email, password });
             if (res.data && res.data.access_token) {
                 localStorage.setItem("token", res.data.access_token);
             }
@@ -36,7 +36,7 @@ export default function Login() {
         setLoading(true);
         try {
             // Mock a Google login locally by signing in as the seeded admin
-            const res = await axios.post("/api/v1/auth/login", { email: "admin@ecotwin.ai", password: "admin12345" });
+            const res = await api.post("/api/v1/auth/login", {email: "admin@ecotwin.ai",password: "admin12345"});
             if (res.data && res.data.access_token) {
                 localStorage.setItem("token", res.data.access_token);
             }
