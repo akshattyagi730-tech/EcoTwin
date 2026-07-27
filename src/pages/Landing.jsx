@@ -3,10 +3,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
     Leaf, Zap, Brain, ArrowRight, BarChart3, ShieldCheck, Cpu, LineChart,
-    Check, Star, Menu, X,
+    Check, Star,
 } from "lucide-react";
-import {
-    kpis, stats, testimonials, pricing, faqs, trustedCompanies,
+import { stats, testimonials, pricing, faqs, trustedCompanies,
 } from "@/lib/ecoData";
 import { useTheme } from "next-themes";
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, Flame, Zap, Activity, Clock, Thermometer, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Flame, Zap, Activity, Clock, CheckCircle2 } from "lucide-react";
 import { alerts as initialAlerts } from "@/lib/ecoData";
 import { cn } from "@/lib/utils";
 
