@@ -1,0 +1,18 @@
+{
+  "services": {
+    "ecotwin-app": {
+      "root": ".",
+      "framework": "vite",
+      "buildCommand": "npm install && npm run build"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "type": "service",
+        "service": "ecotwin-app"
+      }
+    }
+  ]
+}
