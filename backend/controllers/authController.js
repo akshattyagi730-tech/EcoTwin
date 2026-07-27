@@ -1,5 +1,6 @@
 import { User } from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 // Helper to sign JWT
 const generateToken = (id) => {
@@ -302,4 +303,71 @@ export const logout = async (req, res) => {
         success: true,
         message: 'Logged out successfully'
     });
+};
+
+// @desc    Google login / signup
+// @route   POST /api/v1/auth/google
+// @access  Public
+export const googleLogin = async (req, res) => {
+    const { credential } = req.body;
+
+    if (!credential) {
+        return res.status(400).json({
+            success: false,
+            message: 'Credential token is required'
+        });
+    }
+
+    try {
+        // Verify Google token with Google's tokeninfo API
+        const googleRes = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
+        
+        const { email, email_verified, name } = googleRes.data;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid Google token payload (email missing)'
+            });
+        }
+
+        if (email_verified !== 'true' && email_verified !== true) {
+            return res.status(400).json({
+                success: false,
+                message: 'Google email is not verified'
+            });
+        }
+
+        // Find or create user
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // Generate a random strong password for the user record
+            const randomPassword = Math.random().toString(36).slice(-10) + 'A1!';
+            user = await User.create({
+                email,
+                password: randomPassword,
+                role: 'operator',
+                isVerified: true
+            });
+        }
+
+        const token = generateToken(user._id);
+
+        res.status(200).json({
+            success: true,
+            access_token: token,
+            token_type: 'Bearer',
+            user: {
+                id: user._id,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.response?.data?.error_description || error.message || 'Google authentication failed'
+        });
+    }
 };

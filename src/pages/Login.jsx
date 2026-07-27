@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -31,12 +31,11 @@ export default function Login() {
         }
     };
 
-    const handleGoogle = async () => {
+    const handleGoogleResponse = async (response) => {
         setError("");
         setLoading(true);
         try {
-            // Mock a Google login locally by signing in as the seeded admin
-            const res = await api.post("/api/v1/auth/login", {email: "admin@ecotwin.ai",password: "admin12345"});
+            const res = await api.post("/api/v1/auth/google", { credential: response.credential });
             if (res.data && res.data.access_token) {
                 localStorage.setItem("token", res.data.access_token);
             }
@@ -46,6 +45,32 @@ export default function Login() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const initializeGoogleSignIn = () => {
+            if (window.google) {
+                window.google.accounts.id.initialize({
+                    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "1028373117565-dpl4ghafmylkdphn19wvk9nsbwnpfb4.apps.googleusercontent.com",
+                    callback: handleGoogleResponse
+                });
+
+                window.google.accounts.id.renderButton(
+                    document.getElementById("googleBtn"),
+                    { theme: "outline", size: "large", width: "360", text: "continue_with", shape: "pill" }
+                );
+            }
+        };
+
+        initializeGoogleSignIn();
+        const timer = setInterval(() => {
+            if (window.google) {
+                initializeGoogleSignIn();
+                clearInterval(timer);
+            }
+        }, 500);
+
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <AuthLayout
@@ -61,14 +86,9 @@ export default function Login() {
                 </>
             }
         >
-            <Button
-                variant="outline"
-                className="w-full h-12 text-sm font-medium mb-6"
-                onClick={handleGoogle}
-            >
-                <GoogleIcon className="w-5 h-5 mr-2" />
-                Continue with Google
-            </Button>
+            <div className="w-full flex justify-center mb-6">
+                <div id="googleBtn" />
+            </div>
 
             <div className="relative mb-6">
                 <div className="absolute inset-0 flex items-center">

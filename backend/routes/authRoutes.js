@@ -4,6 +4,7 @@ import {
     verifyOtp,
     resendOtp,
     login,
+    googleLogin,
     getMe,
     forgotPassword,
     resetPassword,
@@ -17,6 +18,7 @@ router.post('/signup', register);
 router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
 router.post('/login', login);
+router.post('/google', googleLogin);
 router.get('/me', protect, getMe);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
